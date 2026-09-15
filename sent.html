@@ -3,20 +3,75 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="css/style.css">
     <title>Messages envoyés — PinkParaBox</title>
 </head>
 
 <body>
-    <h1>Messages envoyés</h1>
 
-    <p>Vos messages envoyés apparaîtront ici.</p>
+    <header class="topbar">
+        <div class="brand">
+            <div class="brand-icon">✉</div>
+            <span>PinkParaBox</span>
+        </div>
 
-    <button onclick="location.href='compose.html'">
-        Nouveau message
-    </button>
+        <nav>
+            <a href="mail.html">Boîte de réception</a>
+            <a href="sent.html" class="active">Envoyés</a>
+            <a href="settings.html">Paramètres</a>
+            <a href="index.html">Déconnexion</a>
+        </nav>
+    </header>
 
-    <br><br>
+    <main class="mail-layout">
 
-    <a href="mail.html">Retour à la boîte de réception</a>
+        <aside class="sidebar">
+            <button class="compose-button" onclick="location.href='compose.html'">
+                ＋ Nouveau message
+            </button>
+
+            <div class="folder" onclick="location.href='mail.html'">
+                <span>📥</span>
+                <span>Boîte de réception</span>
+            </div>
+
+            <div class="folder active">
+                <span>📤</span>
+                <span>Messages envoyés</span>
+            </div>
+        </aside>
+
+        <section class="mail-content">
+
+            <div class="mail-header">
+                <div>
+                    <h1>Messages envoyés</h1>
+                    <p>Les messages que vous avez envoyés</p>
+                </div>
+
+                <button class="refresh-button">↻ Actualiser</button>
+            </div>
+
+            <div class="mail-list">
+
+                <div class="empty-mail">
+                    <div class="empty-icon">📭</div>
+                    <h2>Aucun message envoyé</h2>
+                    <p>Vos messages envoyés apparaîtront ici.</p>
+
+                    <button
+                        class="main-button"
+                        onclick="location.href='compose.html'"
+                    >
+                        Écrire un message
+                    </button>
+                </div>
+
+            </div>
+
+        </section>
+
+    </main>
+
 </body>
 </html>
