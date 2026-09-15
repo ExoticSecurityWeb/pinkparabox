@@ -1,4 +1,4 @@
 const SUPABASE_URL = "https://iupjflcrsvswfekrmrte.supabase.co";
 const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Iml1cGpmbGNyc3Zzd2Zla3JtcnRlIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODk0ODMzMDIsImV4cCI6MjEwNTA1OTMwMn0.L20nrGMYYdx4Uwzpqss_0Ihs9dQxKeR8eQVGPgAwsYU";
 
-const API_URL = "TON_URL_BACKEND";
+const API_URL = "https://pinkparabox-api.vosprojets.workers.dev";
