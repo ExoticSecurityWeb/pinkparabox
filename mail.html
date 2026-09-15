@@ -6,7 +6,6 @@
     <link rel="stylesheet" href="css/style.css">
     <title>Boîte de réception — PinkParaBox</title>
 </head>
-
 <body>
 
 <header class="topbar">
@@ -16,76 +15,65 @@
     </div>
 
     <nav>
-        <a href="mail.html" class="active">Boîte de réception</a>
+        <a href="mail.html">Boîte de réception</a>
         <a href="sent.html">Envoyés</a>
+        <a href="compose.html">Nouveau message</a>
         <a href="settings.html">Paramètres</a>
-        <a href="index.html" id="logout">Déconnexion</a>
+        <button type="button" onclick="logout()">Déconnexion</button>
     </nav>
 </header>
 
-<main class="mail-layout">
-
-    <aside class="sidebar">
-        <button class="compose-button" onclick="location.href='compose.html'">
-            ＋ Nouveau message
-        </button>
-
-        <div class="folder active">
-            <span>📥</span>
-            <span>Boîte de réception</span>
+<main class="compose-page">
+    <section class="compose-card">
+        <div class="compose-title">
+            <h1>Boîte de réception</h1>
+            <p id="account-email">Chargement...</p>
         </div>
 
-        <div class="folder" onclick="location.href='sent.html'">
-            <span>📤</span>
-            <span>Messages envoyés</span>
-        </div>
-    </aside>
-
-    <section class="mail-content">
-
-        <div class="mail-header">
-            <div>
-                <h1>Boîte de réception</h1>
-                <p id="mail-status">Chargement des messages…</p>
-            </div>
-
-            <button class="refresh-button" id="refresh">
-                ↻ Actualiser
-            </button>
-        </div>
-
-        <div class="mail-list" id="mail-list">
-
-            <div class="empty-mail">
-                <div class="empty-icon">⏳</div>
-                <h2>Chargement…</h2>
-                <p>Récupération de vos messages.</p>
-            </div>
-
-        </div>
-
+        <div id="status">Chargement des messages...</div>
+        <div id="messages"></div>
     </section>
-
 </main>
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script src="js/config.js"></script>
 
 <script>
-
 const supabaseClient = window.supabase.createClient(
     SUPABASE_URL,
     SUPABASE_ANON_KEY
 );
 
-const mailList = document.getElementById("mail-list");
-const mailStatus = document.getElementById("mail-status");
-const refreshButton = document.getElementById("refresh");
+function getSender(message) {
+    return (
+        message.from_addr ||
+        message.from?.address ||
+        "Expéditeur inconnu"
+    );
+}
 
-async function loadMessages() {
+function getSubject(message) {
+    return message.subject || "(Sans objet)";
+}
 
-    mailStatus.textContent = "Chargement des messages…";
+function getDate(message) {
+    const value = message.received_at || message.receivedAt;
 
+    if (!value) return "";
+
+    const date = new Date(
+        typeof value === "number" && value < 10000000000
+            ? value * 1000
+            : value
+    );
+
+    return date.toLocaleString("fr-FR", {
+        dateStyle: "short",
+        timeStyle: "short"
+    });
+}
+
+async function loadInbox() {
     const {
         data: { session }
     } = await supabaseClient.auth.getSession();
@@ -95,128 +83,50 @@ async function loadMessages() {
         return;
     }
 
-    try {
+    document.getElementById("account-email").textContent =
+        session.user.email;
 
-        const response = await fetch(
-            `${API_URL}/mail`,
-            {
-                headers: {
-                    "Authorization": `Bearer ${session.access_token}`
-                }
-            }
-        );
-
-        const data = await response.json();
-
-        if (!response.ok) {
-            throw new Error(data.error || "Erreur lors de la récupération des mails.");
+    const response = await fetch(`${API_URL}/mail`, {
+        headers: {
+            "Authorization": `Bearer ${session.access_token}`
         }
+    });
 
-        const messages = Array.isArray(data)
-            ? data
-            : (data.messages || data.data || []);
+    const data = await response.json();
 
-        displayMessages(messages);
-
-    } catch (error) {
-
-        console.error(error);
-
-        mailStatus.textContent = "Erreur";
-
-        mailList.innerHTML = `
-            <div class="empty-mail">
-                <div class="empty-icon">⚠️</div>
-                <h2>Impossible de charger les messages</h2>
-                <p>${escapeHtml(error.message)}</p>
-            </div>
-        `;
-    }
-}
-
-function displayMessages(messages) {
-
-    if (!messages.length) {
-
-        mailStatus.textContent = "Aucun message";
-
-        mailList.innerHTML = `
-            <div class="empty-mail">
-                <div class="empty-icon">📭</div>
-                <h2>Aucun message</h2>
-                <p>Votre boîte de réception est actuellement vide.</p>
-            </div>
-        `;
-
+    if (!response.ok) {
+        document.getElementById("status").textContent =
+            data.error || "Impossible de charger les messages.";
         return;
     }
 
-    mailStatus.textContent =
-        `${messages.length} message${messages.length > 1 ? "s" : ""}`;
+    const messages = data.messages || [];
+    const container = document.getElementById("messages");
 
-    mailList.innerHTML = "";
+    document.getElementById("status").textContent =
+        messages.length === 0
+            ? "Aucun message reçu."
+            : `${messages.length} message(s) reçu(s).`;
 
-    messages.forEach(message => {
+    container.innerHTML = "";
 
-        const item = document.createElement("div");
+    for (const message of messages) {
+        const row = document.createElement("div");
+        row.className = "message-row";
 
-        item.className = "mail-item";
-
-        const sender =
-            message.from ||
-            message.from_addr ||
-            message.sender ||
-            "Expéditeur inconnu";
-
-        const subject =
-            message.subject ||
-            "(Sans objet)";
-
-        const preview =
-            message.text ||
-            message.snippet ||
-            "";
-
-        const date =
-            message.receivedAt ||
-            message.received_at ||
-            message.createdAt ||
-            "";
-
-        item.innerHTML = `
-            <div class="mail-item-main">
-                <strong>${escapeHtml(sender)}</strong>
-                <span>${escapeHtml(subject)}</span>
-                <p>${escapeHtml(preview).substring(0, 120)}</p>
+        row.innerHTML = `
+            <div>
+                <strong>${escapeHtml(getSender(message))}</strong>
+                <div>${escapeHtml(getSubject(message))}</div>
             </div>
-
-            <div class="mail-item-date">
-                ${escapeHtml(formatDate(date))}
-            </div>
+            <small>${escapeHtml(getDate(message))}</small>
         `;
 
-        mailList.appendChild(item);
-    });
-}
-
-function formatDate(value) {
-
-    if (!value) return "";
-
-    const date = new Date(value);
-
-    if (Number.isNaN(date.getTime())) {
-        return value;
+        container.appendChild(row);
     }
-
-    return date.toLocaleString("fr-FR", {
-        dateStyle: "short",
-        timeStyle: "short"
-    });
 }
 
 function escapeHtml(value) {
-
     return String(value)
         .replaceAll("&", "&amp;")
         .replaceAll("<", "&lt;")
@@ -225,19 +135,12 @@ function escapeHtml(value) {
         .replaceAll("'", "&#039;");
 }
 
-refreshButton.addEventListener("click", loadMessages);
-
-document.getElementById("logout").addEventListener("click", async (event) => {
-
-    event.preventDefault();
-
+async function logout() {
     await supabaseClient.auth.signOut();
+    window.location.href = "login.html";
+}
 
-    window.location.href = "index.html";
-});
-
-loadMessages();
-
+loadInbox();
 </script>
 
 </body>
