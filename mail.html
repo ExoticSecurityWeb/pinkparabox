@@ -111,8 +111,16 @@ async function loadInbox() {
     container.innerHTML = "";
 
     for (const message of messages) {
+        const id = message.id || message.message_id || message._id;
+
         const row = document.createElement("div");
         row.className = "message-row";
+        row.style.cursor = "pointer";
+        row.style.padding = "12px 0";
+        row.style.borderBottom = "1px solid var(--blue-border)";
+        row.style.display = "flex";
+        row.style.justifyContent = "space-between";
+        row.style.alignItems = "center";
 
         row.innerHTML = `
             <div>
@@ -122,7 +130,69 @@ async function loadInbox() {
             <small>${escapeHtml(getDate(message))}</small>
         `;
 
+        const detail = document.createElement("div");
+        detail.style.display = "none";
+        detail.style.padding = "15px";
+        detail.style.margin = "0 0 12px";
+        detail.style.background = "var(--blue-soft)";
+        detail.style.borderRadius = "10px";
+        detail.style.whiteSpace = "pre-wrap";
+        detail.style.wordBreak = "break-word";
+
+        row.addEventListener("click", async () => {
+            const isOpen = detail.style.display === "block";
+
+            if (isOpen) {
+                detail.style.display = "none";
+                return;
+            }
+
+            if (!detail.dataset.loaded) {
+                detail.textContent = "Chargement du message...";
+                detail.style.display = "block";
+
+                if (!id) {
+                    detail.textContent = "Impossible d'ouvrir ce message (identifiant manquant).";
+                    return;
+                }
+
+                const {
+                    data: { session: currentSession }
+                } = await supabaseClient.auth.getSession();
+
+                try {
+                    const detailResponse = await fetch(
+                        `${API_URL}/mail/${encodeURIComponent(id)}`,
+                        {
+                            headers: {
+                                "Authorization": `Bearer ${currentSession.access_token}`
+                            }
+                        }
+                    );
+
+                    const detailData = await detailResponse.json();
+
+                    if (!detailResponse.ok) {
+                        detail.textContent = detailData.error || "Impossible de charger ce message.";
+                        return;
+                    }
+
+                    const full = detailData.message || detailData;
+
+                    detail.textContent =
+                        full.text || full.html || full.body || "(Message vide)";
+
+                    detail.dataset.loaded = "1";
+                } catch (err) {
+                    detail.textContent = "Erreur réseau lors du chargement.";
+                }
+            } else {
+                detail.style.display = "block";
+            }
+        });
+
         container.appendChild(row);
+        container.appendChild(detail);
     }
 }
 
