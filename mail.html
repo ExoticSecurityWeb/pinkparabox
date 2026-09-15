@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="css/style.css">
+    <title>Boîte de réception — PinkParaBox</title>
+</head>
+
+<body>
+
+    <header class="topbar">
+        <div class="brand">
+            <div class="brand-icon">✉</div>
+            <span>PinkParaBox</span>
+        </div>
+
+        <nav>
+            <a href="mail.html" class="active">Boîte de réception</a>
+            <a href="sent.html">Envoyés</a>
+            <a href="settings.html">Paramètres</a>
+            <a href="index.html">Déconnexion</a>
+        </nav>
+    </header>
+
+    <main class="mail-layout">
+
+        <aside class="sidebar">
+            <button class="compose-button" onclick="location.href='compose.html'">
+                ＋ Nouveau message
+            </button>
+
+            <div class="folder active">
+                <span>📥</span>
+                <span>Boîte de réception</span>
+            </div>
+
+            <div class="folder" onclick="location.href='sent.html'">
+                <span>📤</span>
+                <span>Messages envoyés</span>
+            </div>
+        </aside>
+
+        <section class="mail-content">
+
+            <div class="mail-header">
+                <div>
+                    <h1>Boîte de réception</h1>
+                    <p>Vos messages reçus</p>
+                </div>
+
+                <button class="refresh-button">↻ Actualiser</button>
+            </div>
+
+            <div class="mail-list">
+
+                <div class="empty-mail">
+                    <div class="empty-icon">📭</div>
+                    <h2>Aucun message</h2>
+                    <p>Votre boîte de réception est actuellement vide.</p>
+                </div>
+
+            </div>
+
+        </section>
+
+    </main>
+
+</body>
+</html>
