@@ -1,0 +1,543 @@
+* {
+    box-sizing: border-box;
+}
+
+:root {
+    --blue-dark: #073b7a;
+    --blue: #0b66c3;
+    --blue-light: #3b9cff;
+    --blue-soft: #eaf4ff;
+    --blue-border: #c7ddf3;
+    --text: #102a43;
+    --muted: #627d98;
+    --white: #ffffff;
+    --background: #eef7ff;
+}
+
+body {
+    margin: 0;
+    min-height: 100vh;
+    font-family: Arial, Helvetica, sans-serif;
+    color: var(--text);
+    background: linear-gradient(135deg, #eef7ff, #d7ebff);
+}
+
+/* =========================
+   ACCUEIL
+   ========================= */
+
+body > h1,
+body > p,
+body > a {
+    margin-left: 30px;
+}
+
+body > h1 {
+    padding-top: 30px;
+    color: var(--blue-dark);
+}
+
+body > p {
+    color: var(--muted);
+}
+
+/* =========================
+   PAGES CENTRÉES
+   ========================= */
+
+.page-center {
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+}
+
+/* =========================
+   CONNEXION
+   ========================= */
+
+.auth-card {
+    width: 100%;
+    max-width: 430px;
+    padding: 35px;
+    background: var(--white);
+    border: 1px solid var(--blue-border);
+    border-radius: 20px;
+    box-shadow: 0 15px 40px rgba(7, 59, 122, 0.15);
+}
+
+.logo {
+    text-align: center;
+}
+
+.logo-icon {
+    width: 64px;
+    height: 64px;
+    margin: 0 auto 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 18px;
+    background: linear-gradient(135deg, var(--blue), var(--blue-light));
+    color: white;
+    font-size: 30px;
+}
+
+.logo h1 {
+    margin: 0;
+    color: var(--blue-dark);
+}
+
+.subtitle {
+    margin: 10px 0 30px;
+    text-align: center;
+    color: var(--muted);
+}
+
+/* =========================
+   BARRE DU HAUT
+   ========================= */
+
+.topbar {
+    min-height: 70px;
+    padding: 0 25px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 20px;
+    background: var(--blue-dark);
+    color: white;
+    box-shadow: 0 4px 15px rgba(7, 59, 122, 0.2);
+}
+
+.brand {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-size: 20px;
+    font-weight: bold;
+    white-space: nowrap;
+}
+
+.brand-icon {
+    width: 38px;
+    height: 38px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 10px;
+    background: linear-gradient(135deg, var(--blue), var(--blue-light));
+    color: white;
+}
+
+.topbar nav {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+}
+
+.topbar nav a {
+    padding: 10px 13px;
+    border-radius: 8px;
+    color: white;
+    font-size: 14px;
+    font-weight: bold;
+}
+
+.topbar nav a:hover,
+.topbar nav a.active {
+    background: rgba(255, 255, 255, 0.15);
+    text-decoration: none;
+}
+
+/* =========================
+   FORMULAIRES
+   ========================= */
+
+form {
+    width: 100%;
+}
+
+label {
+    display: block;
+    margin: 15px 0 7px;
+    font-weight: bold;
+    color: var(--text);
+}
+
+input,
+textarea,
+select {
+    width: 100%;
+    padding: 13px;
+    border: 1px solid var(--blue-border);
+    border-radius: 10px;
+    background: white;
+    color: var(--text);
+    font-family: inherit;
+    font-size: 15px;
+    outline: none;
+}
+
+textarea {
+    resize: vertical;
+    min-height: 180px;
+}
+
+input:focus,
+textarea:focus,
+select:focus {
+    border-color: var(--blue-light);
+    box-shadow: 0 0 0 3px rgba(59, 156, 255, 0.15);
+}
+
+input:disabled {
+    background: #f1f6fb;
+    color: var(--muted);
+}
+
+/* =========================
+   BOUTONS
+   ========================= */
+
+button {
+    border: none;
+    border-radius: 10px;
+    padding: 12px 18px;
+    background: linear-gradient(135deg, var(--blue), var(--blue-light));
+    color: white;
+    font-size: 15px;
+    font-weight: bold;
+    cursor: pointer;
+    transition: transform 0.15s, box-shadow 0.15s;
+}
+
+button:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 6px 15px rgba(11, 102, 195, 0.25);
+}
+
+.main-button {
+    width: 100%;
+    margin-top: 25px;
+    padding: 14px;
+}
+
+/* =========================
+   LIENS
+   ========================= */
+
+a {
+    color: var(--blue);
+    text-decoration: none;
+    font-weight: bold;
+}
+
+a:hover {
+    text-decoration: underline;
+}
+
+.back-link {
+    display: block;
+    margin-top: 25px;
+    text-align: center;
+}
+
+/* =========================
+   MESSAGERIE
+   ========================= */
+
+.mail-layout {
+    min-height: calc(100vh - 70px);
+    display: flex;
+}
+
+/* Barre latérale */
+
+.sidebar {
+    width: 250px;
+    padding: 25px 18px;
+    background: white;
+    border-right: 1px solid var(--blue-border);
+}
+
+.compose-button {
+    width: 100%;
+    margin-bottom: 25px;
+    padding: 14px;
+}
+
+.folder {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 5px;
+    padding: 13px;
+    border-radius: 10px;
+    color: var(--text);
+    cursor: pointer;
+}
+
+.folder:hover,
+.folder.active {
+    background: var(--blue-soft);
+    color: var(--blue);
+}
+
+.folder span:first-child {
+    font-size: 19px;
+}
+
+/* Contenu */
+
+.mail-content {
+    flex: 1;
+    padding: 35px;
+    min-width: 0;
+}
+
+.mail-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 20px;
+    margin-bottom: 25px;
+}
+
+.mail-header h1 {
+    margin: 0;
+    color: var(--blue-dark);
+}
+
+.mail-header p {
+    margin: 7px 0 0;
+    color: var(--muted);
+}
+
+.refresh-button {
+    background: white;
+    border: 1px solid var(--blue-border);
+    color: var(--blue);
+}
+
+/* Liste des mails */
+
+.mail-list {
+    min-height: 350px;
+    background: white;
+    border: 1px solid var(--blue-border);
+    border-radius: 16px;
+    box-shadow: 0 8px 25px rgba(7, 59, 122, 0.08);
+}
+
+.empty-mail {
+    min-height: 350px;
+    padding: 40px 20px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+}
+
+.empty-icon {
+    font-size: 50px;
+    margin-bottom: 10px;
+}
+
+.empty-mail h2 {
+    margin: 5px 0;
+    color: var(--blue-dark);
+}
+
+.empty-mail p {
+    margin: 5px 0;
+    color: var(--muted);
+}
+
+.empty-mail .main-button {
+    width: auto;
+    min-width: 190px;
+}
+
+/* =========================
+   COMPOSITION
+   ========================= */
+
+.compose-page {
+    min-height: calc(100vh - 70px);
+    padding: 35px;
+}
+
+.compose-card {
+    width: 100%;
+    max-width: 850px;
+    margin: 0 auto;
+    padding: 35px;
+    background: white;
+    border: 1px solid var(--blue-border);
+    border-radius: 18px;
+    box-shadow: 0 10px 30px rgba(7, 59, 122, 0.1);
+}
+
+.compose-title h1 {
+    margin: 0;
+    color: var(--blue-dark);
+}
+
+.compose-title p {
+    margin: 7px 0 25px;
+    color: var(--muted);
+}
+
+.attachment-box {
+    margin-top: 20px;
+    padding: 15px;
+    border: 1px dashed var(--blue-border);
+    border-radius: 10px;
+    background: var(--blue-soft);
+}
+
+.attachment-box label {
+    margin-top: 0;
+}
+
+.attachment-box p {
+    margin: 8px 0 0;
+    color: var(--muted);
+    font-size: 13px;
+}
+
+.compose-actions {
+    display: flex;
+    justify-content: flex-end;
+    gap: 10px;
+    margin-top: 25px;
+}
+
+.compose-actions .main-button {
+    width: auto;
+    margin-top: 0;
+}
+
+/* =========================
+   PARAMÈTRES
+   ========================= */
+
+.settings-page {
+    min-height: calc(100vh - 70px);
+    padding: 35px;
+}
+
+.settings-card {
+    width: 100%;
+    max-width: 750px;
+    margin: 0 auto;
+    padding: 35px;
+    background: white;
+    border: 1px solid var(--blue-border);
+    border-radius: 18px;
+    box-shadow: 0 10px 30px rgba(7, 59, 122, 0.1);
+}
+
+.settings-title h1 {
+    margin: 0;
+    color: var(--blue-dark);
+}
+
+.settings-title p {
+    margin: 7px 0 30px;
+    color: var(--muted);
+}
+
+.settings-section {
+    padding: 25px 0;
+    border-top: 1px solid var(--blue-border);
+}
+
+.settings-section h2 {
+    margin-top: 0;
+    color: var(--blue-dark);
+}
+
+.settings-section .main-button {
+    max-width: 180px;
+}
+
+.settings-actions {
+    padding-top: 25px;
+    border-top: 1px solid var(--blue-border);
+}
+
+/* =========================
+   MOBILE
+   ========================= */
+
+@media (max-width: 800px) {
+
+    .topbar {
+        padding: 15px;
+        flex-direction: column;
+        align-items: stretch;
+    }
+
+    .brand {
+        justify-content: center;
+    }
+
+    .topbar nav {
+        justify-content: center;
+        flex-wrap: wrap;
+    }
+
+    .mail-layout {
+        flex-direction: column;
+    }
+
+    .sidebar {
+        width: 100%;
+        border-right: none;
+        border-bottom: 1px solid var(--blue-border);
+    }
+
+    .mail-content,
+    .compose-page,
+    .settings-page {
+        padding: 20px;
+    }
+
+    .mail-header {
+        align-items: flex-start;
+        flex-direction: column;
+    }
+}
+
+@media (max-width: 600px) {
+
+    .auth-card,
+    .compose-card,
+    .settings-card {
+        padding: 25px 20px;
+        border-radius: 16px;
+    }
+
+    body > h1,
+    body > p,
+    body > a {
+        margin-left: 20px;
+        margin-right: 20px;
+    }
+
+    .compose-actions {
+        flex-direction: column-reverse;
+    }
+
+    .compose-actions button {
+        width: 100%;
+    }
+
+    .settings-section .main-button {
+        max-width: none;
+    }
+}
