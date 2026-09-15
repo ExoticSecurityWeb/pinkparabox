@@ -6,83 +6,84 @@
     <link rel="stylesheet" href="css/style.css">
     <title>Paramètres — PinkParaBox</title>
 </head>
-
 <body>
 
-    <header class="topbar">
-        <div class="brand">
-            <div class="brand-icon">✉</div>
-            <span>PinkParaBox</span>
+<header class="topbar">
+    <div class="brand">
+        <div class="brand-icon">✉</div>
+        <span>PinkParaBox</span>
+    </div>
+
+    <nav>
+        <a href="mail.html">Boîte de réception</a>
+        <a href="sent.html">Envoyés</a>
+        <a href="compose.html">Nouveau message</a>
+        <a href="settings.html">Paramètres</a>
+        <button type="button" onclick="logout()">Déconnexion</button>
+    </nav>
+</header>
+
+<main class="compose-page">
+    <section class="compose-card">
+        <div class="compose-title">
+            <h1>Paramètres</h1>
+            <p>Votre compte PinkParaBox</p>
         </div>
 
-        <nav>
-            <a href="mail.html">Boîte de réception</a>
-            <a href="sent.html">Envoyés</a>
-            <a href="settings.html" class="active">Paramètres</a>
-            <a href="index.html">Déconnexion</a>
-        </nav>
-    </header>
+        <label for="email">Adresse e-mail</label>
+        <input type="email" id="email" readonly>
 
-    <main class="settings-page">
+        <p id="status">Chargement...</p>
+    </section>
+</main>
 
-        <section class="settings-card">
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="js/config.js"></script>
 
-            <div class="settings-title">
-                <h1>Paramètres</h1>
-                <p>Gérez votre compte PinkParaBox</p>
-            </div>
+<script>
+const supabaseClient = window.supabase.createClient(
+    SUPABASE_URL,
+    SUPABASE_ANON_KEY
+);
 
-            <div class="settings-section">
+async function loadSettings() {
+    const {
+        data: { session }
+    } = await supabaseClient.auth.getSession();
 
-                <h2>Compte</h2>
+    if (!session) {
+        window.location.href = "login.html";
+        return;
+    }
 
-                <label for="email">Adresse e-mail</label>
-                <input
-                    type="email"
-                    id="email"
-                    value=""
-                    placeholder="vous@pinkparabox.abrdns.com"
-                    disabled
-                >
+    const response = await fetch(`${API_URL}/me`, {
+        headers: {
+            "Authorization": `Bearer ${session.access_token}`
+        }
+    });
 
-                <label for="name">Nom affiché</label>
-                <input
-                    type="text"
-                    id="name"
-                    placeholder="Votre nom"
-                >
+    const data = await response.json();
 
-                <button class="main-button">
-                    Enregistrer
-                </button>
+    if (!response.ok) {
+        document.getElementById("status").textContent =
+            data.error || "Impossible de charger le compte.";
+        return;
+    }
 
-            </div>
+    document.getElementById("email").value =
+        data.user.email;
 
-            <div class="settings-section">
+    document.getElementById("status").textContent =
+        "Compte connecté.";
+}
 
-                <h2>Apparence</h2>
+async function logout() {
+    await supabaseClient.auth.signOut();
+    window.location.href = "login.html";
+}
 
-                <label for="theme">Thème</label>
-
-                <select id="theme">
-                    <option value="system">Système</option>
-                    <option value="light">Clair</option>
-                    <option value="dark">Sombre</option>
-                </select>
-
-            </div>
-
-            <div class="settings-actions">
-
-                <button onclick="location.href='mail.html'">
-                    ← Retour à la boîte de réception
-                </button>
-
-            </div>
-
-        </section>
-
-    </main>
+loadSettings();
+</script>
 
 </body>
 </html>
