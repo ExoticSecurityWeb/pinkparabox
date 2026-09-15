@@ -6,72 +6,142 @@
     <link rel="stylesheet" href="css/style.css">
     <title>Messages envoyés — PinkParaBox</title>
 </head>
-
 <body>
 
-    <header class="topbar">
-        <div class="brand">
-            <div class="brand-icon">✉</div>
-            <span>PinkParaBox</span>
+<header class="topbar">
+    <div class="brand">
+        <div class="brand-icon">✉</div>
+        <span>PinkParaBox</span>
+    </div>
+
+    <nav>
+        <a href="mail.html">Boîte de réception</a>
+        <a href="sent.html">Envoyés</a>
+        <a href="compose.html">Nouveau message</a>
+        <a href="settings.html">Paramètres</a>
+        <button type="button" onclick="logout()">Déconnexion</button>
+    </nav>
+</header>
+
+<main class="compose-page">
+    <section class="compose-card">
+        <div class="compose-title">
+            <h1>Messages envoyés</h1>
+            <p id="account-email">Chargement...</p>
         </div>
 
-        <nav>
-            <a href="mail.html">Boîte de réception</a>
-            <a href="sent.html" class="active">Envoyés</a>
-            <a href="settings.html">Paramètres</a>
-            <a href="index.html">Déconnexion</a>
-        </nav>
-    </header>
+        <div id="status">Chargement des messages...</div>
+        <div id="messages"></div>
+    </section>
+</main>
 
-    <main class="mail-layout">
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="js/config.js"></script>
 
-        <aside class="sidebar">
-            <button class="compose-button" onclick="location.href='compose.html'">
-                ＋ Nouveau message
-            </button>
+<script>
+const supabaseClient = window.supabase.createClient(
+    SUPABASE_URL,
+    SUPABASE_ANON_KEY
+);
 
-            <div class="folder" onclick="location.href='mail.html'">
-                <span>📥</span>
-                <span>Boîte de réception</span>
+function getRecipient(message) {
+    return (
+        message.to_addr ||
+        message.to?.[0]?.address ||
+        "Destinataire inconnu"
+    );
+}
+
+function getSubject(message) {
+    return message.subject || "(Sans objet)";
+}
+
+function getDate(message) {
+    const value = message.received_at || message.receivedAt;
+
+    if (!value) return "";
+
+    const date = new Date(
+        typeof value === "number" && value < 10000000000
+            ? value * 1000
+            : value
+    );
+
+    return date.toLocaleString("fr-FR", {
+        dateStyle: "short",
+        timeStyle: "short"
+    });
+}
+
+async function loadSent() {
+    const {
+        data: { session }
+    } = await supabaseClient.auth.getSession();
+
+    if (!session) {
+        window.location.href = "login.html";
+        return;
+    }
+
+    document.getElementById("account-email").textContent =
+        session.user.email;
+
+    const response = await fetch(`${API_URL}/sent`, {
+        headers: {
+            "Authorization": `Bearer ${session.access_token}`
+        }
+    });
+
+    const data = await response.json();
+
+    if (!response.ok) {
+        document.getElementById("status").textContent =
+            data.error || "Impossible de charger les messages.";
+        return;
+    }
+
+    const messages = data.messages || [];
+    const container = document.getElementById("messages");
+
+    document.getElementById("status").textContent =
+        messages.length === 0
+            ? "Aucun message envoyé."
+            : `${messages.length} message(s) envoyé(s).`;
+
+    container.innerHTML = "";
+
+    for (const message of messages) {
+        const row = document.createElement("div");
+        row.className = "message-row";
+
+        row.innerHTML = `
+            <div>
+                <strong>À : ${escapeHtml(getRecipient(message))}</strong>
+                <div>${escapeHtml(getSubject(message))}</div>
             </div>
+            <small>${escapeHtml(getDate(message))}</small>
+        `;
 
-            <div class="folder active">
-                <span>📤</span>
-                <span>Messages envoyés</span>
-            </div>
-        </aside>
+        container.appendChild(row);
+    }
+}
 
-        <section class="mail-content">
+function escapeHtml(value) {
+    return String(value)
+        .replaceAll("&", "&amp;")
+        .replaceAll("<", "&lt;")
+        .replaceAll(">", "&gt;")
+        .replaceAll('"', "&quot;")
+        .replaceAll("'", "&#039;");
+}
 
-            <div class="mail-header">
-                <div>
-                    <h1>Messages envoyés</h1>
-                    <p>Les messages que vous avez envoyés</p>
-                </div>
+async function logout() {
+    await supabaseClient.auth.signOut();
+    window.location.href = "login.html";
+}
 
-                <button class="refresh-button">↻ Actualiser</button>
-            </div>
-
-            <div class="mail-list">
-
-                <div class="empty-mail">
-                    <div class="empty-icon">📭</div>
-                    <h2>Aucun message envoyé</h2>
-                    <p>Vos messages envoyés apparaîtront ici.</p>
-
-                    <button
-                        class="main-button"
-                        onclick="location.href='compose.html'"
-                    >
-                        Écrire un message
-                    </button>
-                </div>
-
-            </div>
-
-        </section>
-
-    </main>
+loadSent();
+</script>
 
 </body>
 </html>
