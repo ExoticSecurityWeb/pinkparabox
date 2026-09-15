@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="css/style.css">
-    <title>Paramètres — PinkParaBox</title>
+    <title>Nouveau message — PinkParaBox</title>
 </head>
 <body>
 
@@ -26,14 +26,26 @@
 <main class="compose-page">
     <section class="compose-card">
         <div class="compose-title">
-            <h1>Paramètres</h1>
-            <p>Votre compte PinkParaBox</p>
+            <h1>Nouveau message</h1>
+            <p id="account-email">Chargement...</p>
         </div>
 
-        <label for="email">Adresse e-mail</label>
-        <input type="email" id="email" readonly>
+        <form id="compose-form">
+            <label for="to">À</label>
+            <input type="email" id="to" placeholder="destinataire@exemple.com" required>
 
-        <p id="status">Chargement...</p>
+            <label for="subject">Objet</label>
+            <input type="text" id="subject" placeholder="Objet du message" required>
+
+            <label for="body">Message</label>
+            <textarea id="body" rows="10" placeholder="Écrivez votre message..." required></textarea>
+
+            <p id="status" style="display:none;"></p>
+
+            <div class="compose-actions">
+                <button type="submit" class="main-button" id="send-button">Envoyer</button>
+            </div>
+        </form>
     </section>
 </main>
 
@@ -46,7 +58,9 @@ const supabaseClient = window.supabase.createClient(
     SUPABASE_ANON_KEY
 );
 
-async function loadSettings() {
+let currentSession = null;
+
+async function loadCompose() {
     const {
         data: { session }
     } = await supabaseClient.auth.getSession();
@@ -56,33 +70,68 @@ async function loadSettings() {
         return;
     }
 
-    const response = await fetch(`${API_URL}/me`, {
-        headers: {
-            "Authorization": `Bearer ${session.access_token}`
-        }
-    });
+    currentSession = session;
 
-    const data = await response.json();
-
-    if (!response.ok) {
-        document.getElementById("status").textContent =
-            data.error || "Impossible de charger le compte.";
-        return;
-    }
-
-    document.getElementById("email").value =
-        data.user.email;
-
-    document.getElementById("status").textContent =
-        "Compte connecté.";
+    document.getElementById("account-email").textContent =
+        session.user.email;
 }
+
+const form = document.getElementById("compose-form");
+const statusEl = document.getElementById("status");
+const sendButton = document.getElementById("send-button");
+
+form.addEventListener("submit", async (event) => {
+    event.preventDefault();
+
+    if (!currentSession) return;
+
+    const to = document.getElementById("to").value.trim();
+    const subject = document.getElementById("subject").value.trim();
+    const body = document.getElementById("body").value;
+
+    statusEl.style.display = "none";
+    sendButton.disabled = true;
+    sendButton.textContent = "Envoi...";
+
+    try {
+        const response = await fetch(`${API_URL}/send`, {
+            method: "POST",
+            headers: {
+                "Authorization": `Bearer ${currentSession.access_token}`,
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify({ to, subject, body })
+        });
+
+        const data = await response.json();
+
+        if (!response.ok) {
+            statusEl.textContent = data.error || "Échec de l'envoi.";
+            statusEl.style.color = "#c0392b";
+            statusEl.style.display = "block";
+            return;
+        }
+
+        statusEl.textContent = "Message envoyé.";
+        statusEl.style.color = "var(--blue-dark)";
+        statusEl.style.display = "block";
+        form.reset();
+    } catch (err) {
+        statusEl.textContent = "Erreur réseau, réessayez.";
+        statusEl.style.color = "#c0392b";
+        statusEl.style.display = "block";
+    } finally {
+        sendButton.disabled = false;
+        sendButton.textContent = "Envoyer";
+    }
+});
 
 async function logout() {
     await supabaseClient.auth.signOut();
     window.location.href = "login.html";
 }
 
-loadSettings();
+loadCompose();
 </script>
 
 </body>
