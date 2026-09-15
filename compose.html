@@ -3,30 +3,83 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Boîte de réception — PinkParaBox</title>
+    <link rel="stylesheet" href="css/style.css">
+    <title>Nouveau message — PinkParaBox</title>
 </head>
 
 <body>
-    <h1>Boîte de réception</h1>
 
-    <p>Bienvenue dans votre boîte mail.</p>
+    <header class="topbar">
+        <div class="brand">
+            <div class="brand-icon">✉</div>
+            <span>PinkParaBox</span>
+        </div>
 
-    <button onclick="location.href='compose.html'">
-        Nouveau message
-    </button>
+        <nav>
+            <a href="mail.html">Boîte de réception</a>
+            <a href="sent.html">Envoyés</a>
+            <a href="settings.html">Paramètres</a>
+        </nav>
+    </header>
 
-    <button onclick="location.href='sent.html'">
-        Messages envoyés
-    </button>
+    <main class="compose-page">
 
-    <button onclick="location.href='settings.html'">
-        Paramètres
-    </button>
+        <section class="compose-card">
 
-    <br><br>
+            <div class="compose-title">
+                <h1>Nouveau message</h1>
+                <p>Rédigez votre message</p>
+            </div>
 
-    <button onclick="location.href='index.html'">
-        Déconnexion
-    </button>
+            <form>
+
+                <label for="to">Destinataire</label>
+                <input
+                    type="email"
+                    id="to"
+                    placeholder="destinataire@exemple.com"
+                    required
+                >
+
+                <label for="subject">Objet</label>
+                <input
+                    type="text"
+                    id="subject"
+                    placeholder="Objet du message"
+                    required
+                >
+
+                <label for="message">Message</label>
+                <textarea
+                    id="message"
+                    rows="12"
+                    placeholder="Écrivez votre message..."
+                    required
+                ></textarea>
+
+                <div class="attachment-box">
+                    <label for="attachment">Pièce jointe</label>
+                    <input type="file" id="attachment">
+                    <p>
+                        Les pièces jointes ne sont pas acceptées par PinkParaBox.
+                    </p>
+                </div>
+
+                <div class="compose-actions">
+                    <button type="button" onclick="location.href='mail.html'">
+                        Annuler
+                    </button>
+
+                    <button type="submit" class="main-button">
+                        Envoyer le message
+                    </button>
+                </div>
+
+            </form>
+
+        </section>
+
+    </main>
+
 </body>
 </html>
